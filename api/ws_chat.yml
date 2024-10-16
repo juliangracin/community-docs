@@ -1,0 +1,175 @@
+asyncapi: 3.0.0
+info:
+  title: Community WS API
+  version: 1.0.0
+  description: >
+    Chat service client websocket API
+    
+channels:
+
+  ## Chat
+
+  chat.get_user:
+    address: 'chat.req/get_user'
+    messages:
+      request.EmptyBody:
+        $ref: '#/components/messages/request.EmptyBody'
+      response.UserGet:
+        $ref: '#/components/messages/chat.response.UserGet'
+
+  ## Share
+
+  share.get_player:
+    address: 'share.req2/get_player'
+    messages:
+      request.EmptyBody:
+        $ref: '#/components/messages/request.EmptyBody'
+      response.PlayerGet:
+        $ref: '#/components/messages/share.response.PlayerGet'
+
+  ## Analysis
+
+operations:
+
+  ## Chat
+
+  chat.get_user:
+    action: receive
+    summary: 'Get the currently logged in user data'
+    channel:
+      $ref: '#/channels/chat.get_user'
+    messages:
+      - $ref: '#/channels/chat.get_user/messages/request.EmptyBody'
+      - $ref: '#/channels/chat.get_user/messages/response.UserGet'
+  
+  ## Share
+
+  share.get_player:
+    action: receive
+    summary: 'Get the currently loggen in player data'
+    channel:
+      $ref: '#/channels/share.get_player'
+    messages:
+      - $ref: '#/channels/share.get_player/messages/request.EmptyBody'
+      - $ref: '#/channels/share.get_player/messages/response.PlayerGet'
+
+components:
+  messages:
+
+    ## Generic
+
+    request.EmptyBody:
+      title: REQUEST
+      description: 'This request has no body'
+
+    ## Chat
+
+    chat.response.UserGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/chat.response.UserGet'
+    
+    ## Share
+
+    share.response.PlayerGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/share.response.PlayerGet'
+
+  schemas:
+
+    ############
+    ## Requests & Responses
+    ############
+
+    ### Chat
+
+    chat.response.UserGet:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/chat.model.User'
+
+    ### Share
+
+    share.response.PlayerGet:
+      type: object
+      properties:
+        player:
+          $ref: '#/components/schemas/share.model.Player'
+
+    ############
+    ## Models
+    ############
+
+    ### Chat
+
+    chat.model.User:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/field.uuid'
+        profile_id:
+          $ref: '#/components/schemas/field.uuid'
+        nickname:
+          type: string
+          example: 'johndoe'
+        role:
+          type: integer
+          example: 0
+        banned:
+          type: boolean
+          example: false
+        warned:
+          type: boolean
+          example: false
+        nick_confirmed:
+          type: boolean
+          example: true
+        share_tc_confirmed:
+          type: boolean
+          example: true
+        my_slips_share_tc_confirmed:
+          type: boolean
+          example: false
+        timeout:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+
+    ### Share
+
+    share.model.Player:
+      type: object
+      additionalProperties: false
+      properties:
+        profileId: 
+          $ref: '#/components/schemas/field.uuid'
+        usrename:
+          type: string
+          example: 'johndoe'
+        shareTcConfirmed:
+          type: boolean
+          example: true
+        mySlipsShareTcConfirmed:
+          type: boolean
+          example: true
+
+    ############
+    ## Fields
+    ############
+
+    field.uuid:
+      type: string
+      description: lowercase UUIDv4 string
+      format: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      example: d4162e00-b6cd-41a6-8b29-d041b0dab769
+    field.SlipId:
+      type: string
+      description: slip ID
+      format: '^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$'
+      example: D4162E00-B6CD-41A6-4B29-D041B0DAB769
+    field.TimeRFC3339Nano:
+      type: string
+      description: Time and date in RFC3339 format with nanoseconds
+      example: '2024-06-07T15:00:00Z'
+
