@@ -1,0 +1,1516 @@
+
+asyncapi: 3.0.0
+info:
+  title: Analysis WS API
+  version: 1.0.0
+  description: >
+    Analysis service client websocket API
+
+
+    All channel requests are in form `analysis.req/[S2|PT]/{operation}`. The`
+    S2` and `PT`
+
+    are not a part of reqeust method, but just a means to separate S2 and PT API
+    variants.
+channels:
+  get_event_analyses:
+    address: get_event_analyses
+    messages:
+      request.EventAnalysesGet:
+        $ref: '#/components/messages/request.EventAnalysesGet'
+      response.EventAnalysesGet:
+        $ref: '#/components/messages/response.EventAnalysesGet'
+  get_analyzed_events:
+    address: get_analyzed_events
+    messages:
+      get_analyzed_events.message:
+        $ref: '#/components/messages/response.AnalyzedEventsGet'
+  get_available_reactions:
+    address: get_available_reactions
+    messages: {}
+  get_analysis:
+    address: get_analysis
+    messages:
+      get_analysis.message.0:
+        $ref: '#/components/messages/request.AnalysisGet'
+      get_analysis.message.1:
+        $ref: '#/components/messages/response.AnalysisGet'
+  get_newest_analyses:
+    address: get_newest_analyses
+    messages:
+      get_newest_analyses.message.0:
+        $ref: '#/components/messages/request.NewestAnalysesGet'
+      get_newest_analyses.message.1:
+        $ref: '#/components/messages/response.NewestAnalysesGet'
+  get_analyses:
+    address: get_analyses
+    messages:
+      get_analyses.message.0:
+        $ref: '#/components/messages/request.AnalysesGet'
+      get_analyses.message.1:
+        $ref: '#/components/messages/response.AnalysesGet'
+  get_analyses_sport_ids:
+    address: get_analyses_sport_ids
+    messages:
+      get_analyses_sport_ids.message:
+        $ref: '#/components/messages/response.AnalysesSportIdsGet'
+  get_random_event_analyses:
+    address: get_random_event_analyses
+    messages:
+      get_random_event_analyses.message.0:
+        $ref: '#/components/messages/request.RandomEventAnalysesGet'
+      get_random_event_analyses.message.1:
+        $ref: '#/components/messages/response.RandomEventAnalysesGet'
+  log_analysis_tab_open:
+    address: log_analysis_tab_open
+    messages: {}
+  log_analysis_odd_copy:
+    address: log_analysis_odd_copy
+    messages: {}
+  post:
+    address: post
+    messages:
+      post.message.0:
+        $ref: '#/components/messages/request.AnalysisPost'
+      post.message.1:
+        $ref: '#/components/messages/response.AnalysisPost'
+  save_draft:
+    address: save_draft
+    messages:
+      save_draft.message.0:
+        $ref: '#/components/messages/request.DraftSave'
+      save_draft.message.1:
+        $ref: '#/components/messages/response.DraftSave'
+  delete_draft:
+    address: delete_draft
+    messages:
+      delete_draft.message.0:
+        $ref: '#/components/messages/request.DraftDelete'
+      delete_draft.message.1:
+        $ref: '#/components/messages/response.DraftDelete'
+  get_draft:
+    address: get_draft
+    messages:
+      get_draft.message.0:
+        $ref: '#/components/messages/request.DraftGet'
+      get_draft.message.1:
+        $ref: '#/components/messages/response.DraftGet'
+  get_drafts:
+    address: get_drafts
+    messages:
+      get_drafts.message.0:
+        $ref: '#/components/messages/request.DraftsGet'
+      get_drafts.message.1:
+        $ref: '#/components/messages/response.DraftsGet'
+  get_slip_odds:
+    address: get_slip_odds
+    messages:
+      get_slip_odds.message.0:
+        $ref: '#/components/messages/request.SlipOddsGet'
+      get_slip_odds.message.1:
+        $ref: '#/components/messages/response.SlipOddsGet'
+  get_analyzed_odds:
+    address: get_analyzed_odds
+    messages:
+      get_analyzed_odds.message.0:
+        $ref: '#/components/messages/request.AnalyzedOddsGet'
+      get_analyzed_odds.message.1:
+        $ref: '#/components/messages/response.AnalyzedOddsGet'
+  get_my_analyses:
+    address: get_my_analyses
+    messages:
+      get_my_analyses.message.0:
+        $ref: '#/components/messages/request.MyAnalysesGet'
+      get_my_analyses.message.1:
+        $ref: '#/components/messages/response.MyAnalysesGet'
+  add_analysis_view:
+    address: add_analysis_view
+    messages: {}
+  toggle_reaction:
+    address: toggle_reaction
+    messages: {}
+  get_player:
+    address: get_player
+    messages: {}
+  confirm_publish_tc:
+    address: confirm_publish_tc
+    messages: {}
+  log_analysis_bet_placed:
+    address: log_analysis_bet_placed
+    messages: {}
+  get_player_profile:
+    address: get_player_profile
+    messages:
+      get_player_profile.message.0:
+        $ref: '#/components/messages/request.PlayerProfileGet'
+      get_player_profile.message.1:
+        $ref: '#/components/messages/response.PlayerProfileGet'
+  get_player_analyses:
+    address: get_player_analyses
+    messages:
+      get_player_analyses.message.0:
+        $ref: '#/components/messages/request.PlayerAnalysesGet'
+      get_player_analyses.message.1:
+        $ref: '#/components/messages/response.PlayerAnalysesGet'
+  get_player_analyzed_sports:
+    address: get_player_analyzed_sports
+    messages:
+      get_player_analyzed_sports.message.0:
+        $ref: '#/components/messages/request.PlayerAnalyzedSportsGet'
+      get_player_analyzed_sports.message.1:
+        $ref: '#/components/messages/response.PlayerAnalyzedSportsGet'
+operations:
+  get_event_analyses:
+    action: receive
+    channel:
+      $ref: '#/channels/get_event_analyses'
+    summary: Get event analyses
+    description: >
+      If the `eventId` field passed in the request is an integer containing ID
+      of the old offer event, the response 
+
+      will contain old offer analyses for that event.
+
+
+      For getting analyses for SBK offer, the clients should use `fixtureId`
+      field. 
+
+
+      If the `eventId` field is a string, containing ID of the SBK offer event,
+      the response will contain SBK offer
+
+      analyses for that SBK event
+    messages:
+      - $ref: '#/channels/get_event_analyses/messages/request.EventAnalysesGet'
+      - $ref: '#/channels/get_event_analyses/messages/response.EventAnalysesGet'
+  get_analyzed_events:
+    action: receive
+    channel:
+      $ref: '#/channels/get_analyzed_events'
+    summary: Get analyzed events
+    messages:
+      - $ref: '#/channels/get_analyzed_events/messages/get_analyzed_events.message'
+  get_available_reactions:
+    action: receive
+    channel:
+      $ref: '#/channels/get_available_reactions'
+  get_analysis:
+    action: receive
+    channel:
+      $ref: '#/channels/get_analysis'
+    description: |
+      Returns a specific analysis, whether it is for old or for SBK offer.
+    messages:
+      - $ref: '#/channels/get_analysis/messages/get_analysis.message.0'
+      - $ref: '#/channels/get_analysis/messages/get_analysis.message.1'
+  get_newest_analyses:
+    action: receive
+    channel:
+      $ref: '#/channels/get_newest_analyses'
+    summary: Get the 3 most recently published analyses
+    description: |
+      The request body is optional. If omitted, the response will return
+      3 most recently published non SBK analyses.
+
+      To include SBK analyses in the response, send the request with
+      `includeSbk` field set to `true`.
+    messages:
+      - $ref: '#/channels/get_newest_analyses/messages/get_newest_analyses.message.0'
+      - $ref: '#/channels/get_newest_analyses/messages/get_newest_analyses.message.1'
+  get_analyses:
+    action: receive
+    channel:
+      $ref: '#/channels/get_analyses'
+    description: >
+      If request contains `includeSbk` field set to true, the sport IDs passed
+      in
+
+      `filters.sportIds` field will be treated as SBK sports.
+    messages:
+      - $ref: '#/channels/get_analyses/messages/get_analyses.message.0'
+      - $ref: '#/channels/get_analyses/messages/get_analyses.message.1'
+  get_analyses_sport_ids:
+    action: receive
+    channel:
+      $ref: '#/channels/get_analyses_sport_ids'
+    description: >
+      Field `availableSportIds` contains old offer sport IDs, for which at least
+      1
+
+      published analysis exists, in last 7 days.
+
+
+      Field `availableSbkSportIds` contains SBK sport IDs. It combines analyses
+      for
+
+      the old offer and analyses for the SBK offer, but converts old offer spost
+      IDs
+
+      to the SBK offer sport IDs, when possible.
+    messages:
+      - $ref: >-
+          #/channels/get_analyses_sport_ids/messages/get_analyses_sport_ids.message
+  get_random_event_analyses:
+    action: receive
+    channel:
+      $ref: '#/channels/get_random_event_analyses'
+    messages:
+      - $ref: >-
+          #/channels/get_random_event_analyses/messages/get_random_event_analyses.message.0
+      - $ref: >-
+          #/channels/get_random_event_analyses/messages/get_random_event_analyses.message.1
+  log_analysis_tab_open:
+    action: receive
+    channel:
+      $ref: '#/channels/log_analysis_tab_open'
+    summary: Unchanged
+  log_analysis_odd_copy:
+    action: receive
+    channel:
+      $ref: '#/channels/log_analysis_odd_copy'
+    summary: Unchanged
+  post:
+    action: receive
+    channel:
+      $ref: '#/channels/post'
+    summary: (Protected) Post an analysis and send it to the moderation for review
+    description: >
+      Use `tipId` for posting an analysis for SBK offer, and `oddId` for posting
+      an
+
+      analysis for old offer.
+    messages:
+      - $ref: '#/channels/post/messages/post.message.0'
+      - $ref: '#/channels/post/messages/post.message.1'
+  save_draft:
+    action: receive
+    channel:
+      $ref: '#/channels/save_draft'
+    summary: (Protected) Save a draft
+    description: >
+      Use `tipId` for saving a draft for SBK offer, and `oddId` for saving a
+      draft
+
+      for old offer.
+    messages:
+      - $ref: '#/channels/save_draft/messages/save_draft.message.0'
+      - $ref: '#/channels/save_draft/messages/save_draft.message.1'
+  delete_draft:
+    action: receive
+    channel:
+      $ref: '#/channels/delete_draft'
+    summary: Delete a draft
+    description: >
+      Use `tipId` for deleting a draft created for SBK offer, and `oddId` for
+      deleting
+
+      a draft created for old offer.
+    messages:
+      - $ref: '#/channels/delete_draft/messages/delete_draft.message.0'
+      - $ref: '#/channels/delete_draft/messages/delete_draft.message.1'
+  get_draft:
+    action: receive
+    channel:
+      $ref: '#/channels/get_draft'
+    summary: Get a draft
+    description: |
+      Drafts created for odd using the old offer will contain old offer odd in
+      `draft.oddData` field.
+
+      Drafts created for odd using the SBK offer will contain SBK offer odd in
+      `draft.sbkOddData` field.
+    messages:
+      - $ref: '#/channels/get_draft/messages/get_draft.message.0'
+      - $ref: '#/channels/get_draft/messages/get_draft.message.1'
+  get_drafts:
+    action: receive
+    channel:
+      $ref: '#/channels/get_drafts'
+    summary: (Protected) Get drafts
+    description: |
+      By default, the response will not include drafts created for SBK offer, if
+      there are any. Use the `includeSbk` request field for including SBK drafts
+      in the response.
+    messages:
+      - $ref: '#/channels/get_drafts/messages/get_drafts.message.0'
+      - $ref: '#/channels/get_drafts/messages/get_drafts.message.1'
+  get_slip_odds:
+    action: receive
+    channel:
+      $ref: '#/channels/get_slip_odds'
+    summary: (Protected) Get slip odds
+    description: >
+      For slips placed using old offer, the response will contain old offer
+      odds, in `odds`
+
+      field.
+
+
+      For slips placed using SBK offer, the response will contain SBK offer odds
+      in `sbkOdds`
+
+      field.
+    messages:
+      - $ref: '#/channels/get_slip_odds/messages/get_slip_odds.message.0'
+      - $ref: '#/channels/get_slip_odds/messages/get_slip_odds.message.1'
+  get_analyzed_odds:
+    action: receive
+    channel:
+      $ref: '#/channels/get_analyzed_odds'
+    summary: (Protected) Get analyzed odds
+    description: >
+      If a request is empty - it does not contain `eventId` field, the response
+      will contain
+
+      all old offer odds a player has analyzed in the `analyzedOdds` field, and
+      all SBK offer
+
+      odds in the `analyzedSbkOdds` field.
+
+
+      If the request contains `eventId` field, and it's of an `integer` type,
+      the response
+
+      field `analyzedOdds` will contain any old offer odds a player has analyzed
+      for that
+
+      event only.
+
+      field. If the `eventId` field is of `string` type, the response field
+      `analyzedSbkOdds`
+
+      will contain any SBK offer odds a player had analyzed for that event only.
+    messages:
+      - $ref: '#/channels/get_analyzed_odds/messages/get_analyzed_odds.message.0'
+      - $ref: '#/channels/get_analyzed_odds/messages/get_analyzed_odds.message.1'
+  get_my_analyses:
+    action: receive
+    channel:
+      $ref: '#/channels/get_my_analyses'
+    summary: (Protected) Get my analyses
+    description: >
+      The request body is optional. If omitted, the response will return
+
+      all player's non SBK analyses. This is to prevent breaking client apps
+      that
+
+      do not support SBK odd data yet.
+
+
+      To include SBK analyses in the response, set the request flag `includeSbk`
+
+      to `true`.
+    messages:
+      - $ref: '#/channels/get_my_analyses/messages/get_my_analyses.message.0'
+      - $ref: '#/channels/get_my_analyses/messages/get_my_analyses.message.1'
+  add_analysis_view:
+    action: receive
+    channel:
+      $ref: '#/channels/add_analysis_view'
+    summary: (Protected) Unchanged
+  toggle_reaction:
+    action: receive
+    channel:
+      $ref: '#/channels/toggle_reaction'
+    summary: (Protected) Unchanged
+  get_player:
+    action: receive
+    channel:
+      $ref: '#/channels/get_player'
+    summary: (Protected) Unchanged
+  confirm_publish_tc:
+    action: receive
+    channel:
+      $ref: '#/channels/confirm_publish_tc'
+    summary: (Protected) Unchanged
+  log_analysis_bet_placed:
+    action: receive
+    channel:
+      $ref: '#/channels/log_analysis_bet_placed'
+    summary: (Protected) Unchanged
+  get_player_profile:
+    action: receive
+    channel:
+      $ref: '#/channels/get_player_profile'
+    summary: (Protected)
+    description: >
+      If a request contains `includeSbk` field and it's set to `true`, the
+      response will
+
+      possibly contain player analyses created for the SBK offer.
+
+
+      Is the `indcludeSbk` field is omitted from the request, or is set to
+      false, the
+
+      response will not include analyses created for SBK offer.
+    messages:
+      - $ref: '#/channels/get_player_profile/messages/get_player_profile.message.0'
+      - $ref: '#/channels/get_player_profile/messages/get_player_profile.message.1'
+  get_player_analyses:
+    action: receive
+    channel:
+      $ref: '#/channels/get_player_analyses'
+    summary: (Protected) Cursor paginated filterable list of player analyses
+    messages:
+      - $ref: '#/channels/get_player_analyses/messages/get_player_analyses.message.0'
+      - $ref: '#/channels/get_player_analyses/messages/get_player_analyses.message.1'
+  get_player_analyzed_sports:
+    action: receive
+    channel:
+      $ref: '#/channels/get_player_analyzed_sports'
+    summary: (Protected)
+    description: >
+      The response field `analyzedSports` contains only sports for the old offer
+      a
+
+      player has analyzed.
+
+
+      Field `analyzedSbkSports` contains combined old and SBK offer analyzed
+      sports.
+
+      The IDs in this field match IDs of sports used in SBK offer. Any old offer
+
+      sport IDs are converted into SBK sport IDs, if possible.
+    messages:
+      - $ref: >-
+          #/channels/get_player_analyzed_sports/messages/get_player_analyzed_sports.message.0
+      - $ref: >-
+          #/channels/get_player_analyzed_sports/messages/get_player_analyzed_sports.message.1
+components:
+  messages:
+    request.EventAnalysesGet:
+      title: REQUEST
+      payload:
+        oneOf:
+          - $ref: '#/components/schemas/request.EventAnalysesGet'
+          - $ref: '#/components/schemas/request.SbkEventAnalysesGet'
+      examples:
+        - name: get old offer analyses
+          payload:
+            eventId: 1234
+        - name: get SBK offer analyses
+          payload:
+            eventId: 1m1000-m1-l0-o1
+        - name: get SBK offer analyses for fixture
+          payload:
+            fixtureId: f1000
+    response.EventAnalysesGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.EventAnalysesGet'
+      examples:
+        - name: old offer analyses
+          payload:
+            analyses:
+              - id: d4162e00-b6cd-41a6-8b29-d041b0dab769
+                profileId: d4162e00-b6cd-41a6-8b29-d041b0dab769
+                playerName: John Doe
+                text: Lorem ipsum dolor simet
+                oddData:
+                  id: 1125610103
+                  currentId: 1125870003
+                  eventId: 31010925
+                  sportId: 6
+                  marketId: 31010925
+                  marketName: Danska(rm)-Švedska
+                  oddName: '2'
+                  oddPrevious: 5.7
+                  oddCurrent: 5.55
+                  status: 0
+                  startTime: '2024-06-07T15:00:00Z'
+                approvalState: 2
+                viewCount: 12
+                reactions:
+                  - id: clap
+                    players:
+                      - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                  - id: thinking
+                    players:
+                      - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                reactionsCount: 3
+                copyCount: 12
+                createdAt: '2024-06-07T15:00:00Z'
+        - name: SBK offer analyses
+          payload:
+            analyses:
+              - id: d4162e00-b6cd-41a6-8b29-d041b0dab769
+                profileId: d4162e00-b6cd-41a6-8b29-d041b0dab769
+                playerName: John Doe
+                text: Lorem ipsum dolor simet
+                sbkOddData:
+                  id: 1m1000-m1-l0-o1
+                  tournamentId: '123000456'
+                  eventId: 1m1000
+                  fixtureId: f1000
+                  marketId: 1
+                  lineId: 0
+                  outcomeId: 1
+                  sportId: 1
+                  eventName: West Ham United FC - Burnley FC
+                  marketName: 1x2
+                  lineName: 1x2
+                  outcomeName: '1'
+                  oddPrevious: 1.55
+                  oddCurrent: 1.55
+                  status: 0
+                  startTime: '2024-06-07T15:00:00Z'
+                approvalState: 2
+                viewCount: 12
+                reactions:
+                  - id: clap
+                    players:
+                      - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                  - id: thinking
+                    players:
+                      - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                reactionsCount: 3
+                copyCount: 12
+                createdAt: '2024-06-07T15:00:00Z'
+    response.AnalyzedEventsGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.AnalyzedEventsGet'
+    request.AnalysisGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.AnalysisGet'
+    response.AnalysisGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.AnalysisGet'
+      examples:
+        - name: old offer analysis
+          payload:
+            analysis:
+              id: d4162e00-b6cd-41a6-8b29-d041b0dab769
+              profileId: d4162e00-b6cd-41a6-8b29-d041b0dab769
+              playerName: John Doe
+              text: Lorem ipsum dolor simet
+              oddData:
+                id: 1125610103
+                currentId: 1125870003
+                eventId: 31010925
+                sportId: 6
+                marketId: 31010925
+                marketName: Danska(rm)-Švedska
+                oddName: '2'
+                oddPrevious: 5.7
+                oddCurrent: 5.55
+                status: 0
+                startTime: '2024-06-07T15:00:00Z'
+              approvalState: 2
+              viewCount: 12
+              reactions:
+                - id: clap
+                  players:
+                    - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                - id: thinking
+                  players:
+                    - d4162e00-b6cd-41a6-8b29-d041b0dab769
+              reactionsCount: 3
+              copyCount: 12
+              createdAt: '2024-06-07T15:00:00Z'
+        - name: SBK offer analysis
+          payload:
+            analysis:
+              id: d4162e00-b6cd-41a6-8b29-d041b0dab769
+              profileId: d4162e00-b6cd-41a6-8b29-d041b0dab769
+              playerName: John Doe
+              text: Lorem ipsum dolor simet
+              sbkOddData:
+                id: 1m1000-m1-l0-o1
+                tournamentId: '123000456'
+                eventId: 1m1000
+                fixtureId: f1000
+                marketId: 1
+                lineId: 0
+                outcomeId: 1
+                sportId: 1
+                eventName: West Ham United FC - Burnley FC
+                marketName: 1x2
+                lineName: 1x2
+                outcomeName: '1'
+                oddPrevious: 1.55
+                oddCurrent: 1.55
+                status: 0
+                startTime: '2024-06-07T15:00:00Z'
+              approvalState: 2
+              viewCount: 12
+              reactions:
+                - id: clap
+                  players:
+                    - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                - id: thinking
+                  players:
+                    - d4162e00-b6cd-41a6-8b29-d041b0dab769
+              reactionsCount: 3
+              copyCount: 12
+              createdAt: '2024-06-07T15:00:00Z'
+    response.AnalysesSportIdsGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.AnalysesSportIdsGet'
+    request.RandomEventAnalysesGet:
+      title: REQUEST
+      payload:
+        oneOf:
+          - $ref: '#/components/schemas/request.RandomEventAnalysesGet'
+          - $ref: '#/components/schemas/request.RandomSbkEventAnalysesGet'
+      examples:
+        - name: Get random analyses for old offer
+          payload:
+            filters:
+              eventIds:
+                - 100
+                - 200
+        - name: Get random analyses for SBK offer
+          payload:
+            filters:
+              eventIds:
+                - 1m1000
+                - 1m2000
+    response.RandomEventAnalysesGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.RandomEventAnalysesGet'
+    request.AnalysisPost:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.AnalysisPost'
+    response.AnalysisPost:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.AnalysisPost'
+    request.DraftSave:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.DraftSave'
+    response.DraftSave:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.DraftSave'
+    request.DraftDelete:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.DraftDelete'
+    response.DraftDelete:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.DraftDelete'
+    request.DraftGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.DraftGet'
+    response.DraftGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.DraftGet'
+    request.DraftsGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.DraftsGet'
+    response.DraftsGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.DraftsGet'
+    request.AnalyzedOddsGet:
+      title: REQUEST
+      payload:
+        oneOf:
+          - $ref: '#/components/schemas/request.AnalyzedOddsGet'
+          - $ref: '#/components/schemas/request.AnalyzedOddsSbkGet'
+    response.AnalyzedOddsGet:
+      title: RESPNSE
+      payload:
+        $ref: '#/components/schemas/response.AnalyzedOddsGet'
+    request.MyAnalysesGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.MyAnalysesGet'
+    response.MyAnalysesGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.MyAnalysesGet'
+    request.NewestAnalysesGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.NewestAnalysesGet'
+    response.NewestAnalysesGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.NewestAnalysesGet'
+      examples:
+        - name: newest old offer analyses
+          payload:
+            analyses:
+              - id: d4162e00-b6cd-41a6-8b29-d041b0dab769
+                profileId: d4162e00-b6cd-41a6-8b29-d041b0dab769
+                playerName: John Doe
+                text: Lorem ipsum dolor simet
+                oddData:
+                  id: 1125610103
+                  currentId: 1125870003
+                  eventId: 31010925
+                  sportId: 6
+                  marketId: 31010925
+                  marketName: Danska(rm)-Švedska
+                  oddName: '2'
+                  oddPrevious: 5.7
+                  oddCurrent: 5.55
+                  status: 0
+                  startTime: '2024-06-07T15:00:00Z'
+                approvalState: 2
+                viewCount: 12
+                reactions:
+                  - id: clap
+                    players:
+                      - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                  - id: thinking
+                    players:
+                      - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                reactionsCount: 3
+                copyCount: 12
+                createdAt: '2024-06-07T15:00:00Z'
+        - name: newest SBK offer analyses
+          payload:
+            analyses:
+              - id: d4162e00-b6cd-41a6-8b29-d041b0dab769
+                profileId: d4162e00-b6cd-41a6-8b29-d041b0dab769
+                playerName: John Doe
+                text: Lorem ipsum dolor simet
+                sbkOddData:
+                  id: 1m1000-m1-l0-o1
+                  tournamentId: '123000456'
+                  eventId: 1m1000
+                  fixtureId: f1000
+                  marketId: 1
+                  lineId: 0
+                  outcomeId: 1
+                  sportId: 1
+                  eventName: West Ham United FC - Burnley FC
+                  marketName: 1x2
+                  lineName: 1x2
+                  outcomeName: '1'
+                  oddPrevious: 1.55
+                  oddCurrent: 1.55
+                  status: 0
+                  startTime: '2024-06-07T15:00:00Z'
+                approvalState: 2
+                viewCount: 12
+                reactions:
+                  - id: clap
+                    players:
+                      - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                  - id: thinking
+                    players:
+                      - d4162e00-b6cd-41a6-8b29-d041b0dab769
+                reactionsCount: 3
+                copyCount: 12
+                createdAt: '2024-06-07T15:00:00Z'
+    request.AnalysesGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.AnalysesGet'
+    response.AnalysesGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.AnalysesGet'
+    request.SlipOddsGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.SlipOddsGet'
+    response.SlipOddsGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.SlipOddsGet'
+    request.PlayerProfileGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.PlayerProfileGet'
+    response.PlayerProfileGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.PlayerProfileGet'
+    request.PlayerAnalysesGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.PlayerAnalysesGet'
+    response.PlayerAnalysesGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.PlayerAnalysesGet'
+    request.PlayerAnalyzedSportsGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/request.PlayerAnalyzedSportsGet'
+    response.PlayerAnalyzedSportsGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/response.PlayerAnalyzedSportsGet'
+  schemas:
+    amp.RequestHeaders:
+      type: object
+      properties:
+        t:
+          type: integer
+          enum:
+            - 2
+        i:
+          type: integer
+          example: 1234
+        u:
+          type: string
+          description: 'uri in the form of `{topic}/{method}` to send request to'
+          example: topic.req/some_method
+    amp.ResponseHeaders:
+      type: object
+      properties:
+        t:
+          type: integer
+          enum:
+            - 3
+        i:
+          type: integer
+          example: 1234
+    enum.ApprovalState:
+      type: integer
+      description: |
+        **Enum names**:
+        - `0` - Pending
+        - `1` - Rejected
+        - `2` - Approved
+      enum:
+        - 0
+        - 1
+        - 2
+      example: 2
+    enum.ReactionId:
+      type: string
+      enum:
+        - clap
+        - thinking
+    model.Analysis:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/field.uuid'
+        profileId:
+          $ref: '#/components/schemas/field.uuid'
+        playerName:
+          type: string
+          example: John Doe
+        text:
+          type: string
+          example: Lorem ipsum dolor simet
+        oddData:
+          $ref: '#/components/schemas/model.OddData'
+        sbkOddData:
+          $ref: '#/components/schemas/model.SbkOddData'
+        approvalState:
+          $ref: '#/components/schemas/enum.ApprovalState'
+        viewCount:
+          type: integer
+          example: 12
+        reactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.PlayerReaction'
+        reactionsCount:
+          type: integer
+          example: 3
+        copyCount:
+          type: integer
+          example: 12
+        createdAt:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+      required:
+        - id
+        - playerName
+        - text
+        - approvalState
+        - viewCount
+    model.Draft:
+      type: object
+      properties:
+        text:
+          type: string
+          example: Lorem ipsum dolor simet
+        ts:
+          type: integer
+          example: 1715410517
+        oddData:
+          $ref: '#/components/schemas/model.OddData'
+        sbkOddData:
+          $ref: '#/components/schemas/model.SbkOddData'
+    model.SbkOddData:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1m1000-m1-l0-o1
+        tournamentId:
+          type: string
+          example: '123000456'
+        eventId:
+          type: string
+          example: 1m1000
+        fixtureId:
+          type: string
+          example: f1000
+        marketId:
+          type: integer
+          example: 1
+        lineId:
+          type: integer
+          example: 0
+        outcomeId:
+          type: integer
+          example: 1
+        sportId:
+          type: integer
+          example: 1
+        eventName:
+          type: string
+          example: West Ham United FC - Burnley FC
+        marketName:
+          type: string
+          example: 1x2
+        lineName:
+          type: string
+          example: 1x2
+        outcomeName:
+          type: string
+          example: '1'
+        oddPrevious:
+          type: number
+          example: 1.55
+        oddCurrent:
+          type: number
+          example: 1.55
+        status:
+          type: integer
+          example: 0
+        startTime:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+    model.AnalyzedOdd:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1824934
+        tipId:
+          type: string
+          example: 124189-2
+        marketId:
+          type: integer
+          example: 124189
+    model.AnalyzedSbkOdd:
+      type: object
+      properties:
+        id:
+          type: string
+        eventId:
+          type: string
+        marketId:
+          type: integer
+        lineId:
+          type: integer
+        outcomeId:
+          type: integer
+    model.AnalysesGetFilters:
+      type: object
+      properties:
+        lastId:
+          $ref: '#/components/schemas/field.uuid'
+        count:
+          type: integer
+          example: 5
+        matchStartTimeFrom:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+        matchStartTimeTo:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+        playerName:
+          type: string
+          example: Joh
+        sportIds:
+          type: array
+          items:
+            type: integer
+            example: 2
+        matchStatuses:
+          type: array
+          items:
+            type: integer
+            example: 1
+    model.PlayerReaction:
+      type: object
+      additionalProperteis: false
+      properties:
+        id:
+          $ref: '#/components/schemas/enum.ReactionId'
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/field.uuid'
+      required:
+        - id
+        - players
+    model.OddData:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          example: 1125610103
+        currentId:
+          type: integer
+          example: 1125870003
+        eventId:
+          type: integer
+          example: 31010925
+        sportId:
+          type: integer
+          example: 6
+        marketId:
+          type: integer
+          example: 31010925
+        marketName:
+          type: string
+          example: Danska(rm)-Švedska
+        oddName:
+          type: string
+          example: '2'
+        oddPrevious:
+          type: number
+          example: 5.7
+        oddCurrent:
+          type: number
+          example: 5.55
+        status:
+          type: integer
+          example: 0
+        startTime:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+      required:
+        - id
+        - currentId
+        - eventId
+        - sportId
+        - marketId
+        - marketName
+        - oddName
+        - oddPrevious
+        - oddCurrent
+        - status
+        - startTime
+    request.EventAnalysesGet:
+      type: object
+      additionalProperties: false
+      properties:
+        eventId:
+          type: integer
+          example: 1234
+    request.SbkEventAnalysesGet:
+      type: object
+      additionalProperties: false
+      properties:
+        fixtureId:
+          type: string
+          example: f1000
+        eventId:
+          type: string
+          example: 1m1000-m1-l0-o1
+    response.EventAnalysesGet:
+      type: object
+      properties:
+        analyses:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Analysis'
+    response.AnalysesSportIdsGet:
+      type: object
+      properties:
+        availableSportIds:
+          type: array
+          items:
+            type: integer
+        availableSbkSportIds:
+          type: array
+          items:
+            type: integer
+    request.RandomEventAnalysesGet:
+      type: object
+      properties:
+        filters:
+          type: object
+          properties:
+            eventIds:
+              type: array
+              items:
+                type: integer
+                example: 1234
+    request.RandomSbkEventAnalysesGet:
+      type: object
+      properties:
+        filters:
+          type: object
+          properties:
+            eventIds:
+              type: array
+              items:
+                type: string
+                example: 1m1000
+    response.RandomEventAnalysesGet:
+      type: object
+      properties:
+        analyses:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Analysis'
+    response.AnalyzedEventsGet:
+      type: object
+      additionalProperties: false
+      properties:
+        eventIds:
+          type: array
+          items:
+            type: integer
+            example: 1234
+        fixtureIds:
+          type: array
+          items:
+            type: string
+            example: f1000
+        sbkEventIds:
+          type: array
+          items:
+            type: string
+            example: 1m1000-m1-l0-o1
+        analyzedFixtures:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: f1000
+              count:
+                type: integer
+                example: 15
+        analyzedSbkEvents:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: 1m1000-m1-l0-o1
+              count:
+                type: integer
+                example: 12
+    request.AnalysisGet:
+      type: object
+      properties:
+        analysisId:
+          $ref: '#/components/schemas/field.uuid'
+    response.AnalysisGet:
+      type: object
+      additionalProperties: false
+      properties:
+        analysis:
+          $ref: '#/components/schemas/model.Analysis'
+    request.AnalysisPost:
+      type: object
+      properties:
+        tipId:
+          type: string
+          example: 1m1000-m1-l0-o1'
+        oddId:
+          type: integer
+          example: 1234
+        analysisText:
+          type: string
+          example: Lorem ipsum
+        slipId:
+          $ref: '#/components/schemas/field.SlipId'
+      required:
+        - analysisText
+    response.AnalysisPost:
+      type: object
+      properties:
+        analysis:
+          $ref: '#/components/schemas/model.Analysis'
+    request.DraftSave:
+      type: object
+      properties:
+        tipId:
+          type: string
+          example: 1m1000-m1-l0-o1
+        oddId:
+          type: integer
+          example: 46289
+        slipId:
+          $ref: '#/components/schemas/field.SlipId'
+        analysisText:
+          type: string
+          example: Lorem ipsum dolor simet
+    response.DraftSave:
+      type: object
+      properties:
+        slipId:
+          $ref: '#/components/schemas/field.SlipId'
+        draft:
+          $ref: '#/components/schemas/model.Draft'
+    request.DraftDelete:
+      type: object
+      properties:
+        tipId:
+          type: string
+          example: 1m1000-m1-l0-o1
+        oddId:
+          type: integer
+          example: 46289
+        slipId:
+          $ref: '#/components/schemas/field.SlipId'
+    response.DraftDelete:
+      type: object
+      properties:
+        tipId:
+          type: string
+          example: 1m1000-m1-l0-o1
+        oddId:
+          type: integer
+          example: 46289
+        slipId:
+          $ref: '#/components/schemas/field.SlipId'
+    request.DraftGet:
+      type: object
+      properties:
+        tipId:
+          type: string
+          example: 1m1000-m1-l0-o1
+        oddId:
+          type: integer
+          example: 46289
+        slipId:
+          $ref: '#/components/schemas/field.SlipId'
+    response.DraftGet:
+      type: object
+      properties:
+        draft:
+          $ref: '#/components/schemas/model.Draft'
+        odd:
+          $ref: '#/components/schemas/model.OddData'
+        sbkOdd:
+          $ref: '#/components/schemas/model.SbkOddData'
+    request.DraftsGet:
+      type: object
+      properties:
+        includeSbk:
+          type: boolean
+    response.DraftsGet:
+      type: object
+      properties:
+        drafts:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Draft'
+        expiredDrafts:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Draft'
+    request.AnalyzedOddsGet:
+      type: object
+      properties:
+        eventId:
+          type: integer
+        includeSbk:
+          type: boolean
+    request.AnalyzedOddsSbkGet:
+      type: object
+      properties:
+        eventId:
+          type: string
+        includeSbk:
+          type: boolean
+    response.AnalyzedOddsGet:
+      type: object
+      properties:
+        analyzedOdds:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.AnalyzedOdd'
+        analyzedSbkOdds:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.AnalyzedSbkOdd'
+    request.MyAnalysesGet:
+      type: object
+      properties:
+        includeSbk:
+          type: boolean
+          example: true
+    response.MyAnalysesGet:
+      type: object
+      properties:
+        analyses:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Analysis'
+    request.NewestAnalysesGet:
+      type: object
+      properties:
+        includeSbk:
+          type: boolean
+          example: true
+    response.NewestAnalysesGet:
+      type: object
+      properties:
+        analyses:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Analysis'
+    request.AnalysesGet:
+      type: object
+      properties:
+        includeSbk:
+          type: boolean
+        filters:
+          $ref: '#/components/schemas/model.AnalysesGetFilters'
+    response.AnalysesGet:
+      type: object
+      properties:
+        analyses:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Analysis'
+    request.SlipOddsGet:
+      type: object
+      properties:
+        slipId:
+          $ref: '#/components/schemas/field.SlipId'
+        fixtureId:
+          type: string
+          example: f1000
+    response.SlipOddsGet:
+      type: object
+      properties:
+        slipId:
+          $ref: '#/components/schemas/field.SlipId'
+        odds:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.OddData'
+        sbkOdds:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.SbkOddData'
+        drafts:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Draft'
+    request.PlayerProfileGet:
+      type: object
+      properties:
+        username:
+          type: string
+          example: John
+        includeSbk:
+          type: boolean
+          example: true
+      required:
+        - usrename
+    response.PlayerProfileGet:
+      type: object
+      properties:
+        analyses:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Analysis'
+        hasNext:
+          type: boolean
+          example: true
+    request.PlayerAnalysesGet:
+      type: object
+      properties:
+        username:
+          type: string
+          example: John
+        includeSbk:
+          type: boolean
+          example: true
+        filters:
+          type: object
+          properties:
+            lastId:
+              $ref: '#/components/schemas/field.uuid'
+            limit:
+              type: integer
+              example: 5
+            matchStartTimeFrom:
+              $ref: '#/components/schemas/field.TimeRFC3339Nano'
+            matchStartTimeTo:
+              $ref: '#/components/schemas/field.TimeRFC3339Nano'
+            sportIds:
+              type: array
+              items:
+                type: integer
+                example: 2
+            matchStatuses:
+              type: array
+              items:
+                type: integer
+                example: 1
+            marketName:
+              type: string
+              example: Madrid
+            eventName:
+              type: string
+              example: Madrid
+    response.PlayerAnalysesGet:
+      type: object
+      properties:
+        analyses:
+          type: array
+          items:
+            $ref: '#/components/schemas/model.Analysis'
+        hasNext:
+          type: boolean
+          example: true
+    request.PlayerAnalyzedSportsGet:
+      type: object
+      properties:
+        username:
+          type: string
+          example: John
+    response.PlayerAnalyzedSportsGet:
+      type: object
+      properties:
+        analyzedSports:
+          type: array
+          items:
+            type: integer
+            example: 2
+        analyzedSbkSports:
+          type: array
+          items:
+            type: integer
+            example: 1
+    field.uuid:
+      type: string
+      description: lowercase UUIDv4 string
+      format: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      example: d4162e00-b6cd-41a6-8b29-d041b0dab769
+    field.SlipId:
+      type: string
+      description: slip ID
+      format: '^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$'
+      example: D4162E00-B6CD-41A6-4B29-D041B0DAB769
+    field.TimeRFC3339Nano:
+      type: string
+      description: Time and date in RFC3339 format with nanoseconds
+      example: '2024-06-07T15:00:00Z'
+
