@@ -16,6 +16,14 @@ channels:
         $ref: '#/components/messages/request.EmptyBody'
       response.UserGet:
         $ref: '#/components/messages/chat.response.UserGet'
+  
+  chat.get_available_report_actions:
+    address: chat.req/get_available_report_actions
+    messages:
+      request.AvailableReportActionsGet:
+        $ref: '#/components/messages/chat.request.AvailableReportActionsGet'
+      response.AvailableReportActionsGet:
+        $ref: '#/components/messages/chat.response.AvailableReportActionsGet'
 
   ## Share
 
@@ -28,12 +36,22 @@ channels:
         $ref: '#/components/messages/share.response.PlayerGet'
 
   ## Analysis
+  
+  analysis.get_player:
+    address: 'analysis.req/get_player'
+    messages:
+      request.EmptyBody:
+        $ref: '#/components/messages/request.EmptyBody'
+      response.PlayerGet:
+        $ref: '#/components/messages/analysis.response.PlayerGet'
+
+############
 
 operations:
 
   ## Chat
 
-  chat.get_user:
+  chat.req/get_user:
     action: receive
     summary: 'Get the currently logged in user data'
     channel:
@@ -42,9 +60,18 @@ operations:
       - $ref: '#/channels/chat.get_user/messages/request.EmptyBody'
       - $ref: '#/channels/chat.get_user/messages/response.UserGet'
   
+  chat.req/get_available_report_actions:
+    action: receive
+    summary: 'Get the available report actions for selected message'
+    channel:
+      $ref: '#/channels/chat.get_available_report_actions'
+    messages:
+      - $ref: '#/channels/chat.get_available_report_actions/messages/request.AvailableReportActionsGet'
+      - $ref: '#/channels/chat.get_available_report_actions/messages/response.AvailableReportActionsGet'
+
   ## Share
 
-  share.get_player:
+  share.req2/get_player:
     action: receive
     summary: 'Get the currently loggen in player data'
     channel:
@@ -53,7 +80,20 @@ operations:
       - $ref: '#/channels/share.get_player/messages/request.EmptyBody'
       - $ref: '#/channels/share.get_player/messages/response.PlayerGet'
 
+  ## Analysis
+
+  analysis.req/get_player:
+    action: receive
+    channel:
+      $ref: '#/channels/analysis.get_player'
+    messages:
+      - $ref: '#/channels/analysis.get_player/messages/request.EmptyBody'
+      - $ref: '#/channels/analysis.get_player/messages/response.PlayerGet'
+  
+############
+
 components:
+
   messages:
 
     ## Generic
@@ -68,13 +108,34 @@ components:
       title: RESPONSE
       payload:
         $ref: '#/components/schemas/chat.response.UserGet'
-    
+
+    chat.request.AvailableReportActionsGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/chat.request.AvailableReportActionsGet'
+
+    chat.response.AvailableReportActionsGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/chat.response.AvailableReportActionsGet'
+
+    chat.request.MessageReport:
+      title: REQUEST
+
     ## Share
 
     share.response.PlayerGet:
       title: RESPONSE
       payload:
         $ref: '#/components/schemas/share.response.PlayerGet'
+
+    ## Analysis
+
+    analysis.response.PlayerGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/analysis.response.PlayerGet'
+
 
   schemas:
 
@@ -90,6 +151,22 @@ components:
         user:
           $ref: '#/components/schemas/chat.model.User'
 
+    chat.request.AvailableReportActionsGet:
+      type: object
+      additionalProperties: false
+      properties:
+        message_id:
+          $ref: '#/components/schemas/field.uuid'
+
+    chat.response.AvailableReportActionsGet:
+      type: object
+      additionalProperties: false
+      properties:
+        report_action_availability:
+          type: integer
+        categories:
+          $ref: '#/components/schemas/chat.model.AvailableCategory'
+  
     ### Share
 
     share.response.PlayerGet:
@@ -97,6 +174,14 @@ components:
       properties:
         player:
           $ref: '#/components/schemas/share.model.Player'
+    
+    ### Analysis
+
+    analysis.response.PlayerGet:
+      type: object
+      properties:
+        player:
+          $ref: '#/components/schemas/analysis.model.Player'
 
     ############
     ## Models
@@ -136,6 +221,21 @@ components:
         timeout:
           $ref: '#/components/schemas/field.TimeRFC3339Nano'
 
+    chat.model.AvailableCategory:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/chat.enum.ReportCategory'
+        label:
+          type: string
+          example: 'chat_message_report_category_other'
+        text:
+          type: string
+        is_note_mandatory:
+          type: boolean
+          example: true
+
     ### Share
 
     share.model.Player:
@@ -153,6 +253,39 @@ components:
         mySlipsShareTcConfirmed:
           type: boolean
           example: true
+
+    ### Analysis
+
+    analysis.model.Player:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/field.uuid'
+        name:
+          type: string
+          example: 'johndoe'
+        banned:
+          type: boolean
+          example: false
+        publish_tc_confirmed:
+          type: boolean
+          example: true
+
+    ############
+    ## Enums
+    ############
+
+    ## Chat
+
+    chat.enum.ReportCategory:
+      type: integer
+      enum:
+        - 0 # Other
+        - 1 # Hate speech
+        - 2 # Asking for money
+        - 3 # Verbal abuse
+
 
     ############
     ## Fields
