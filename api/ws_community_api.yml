@@ -35,6 +35,14 @@ channels:
       response.PlayerGet:
         $ref: '#/components/messages/share.response.PlayerGet'
 
+  share.get_external_shared_slip:
+    address: 'share.req2/get_external_shared_slip'
+    messages:
+      request.ExternalSharedSlipGet:
+        $ref: '#/components/messages/share.request.ExternalSharedSlipGet'
+      response.ExternalSharedSlipGet:
+        $ref: '#/components/messages/share.response.ExternalSharedSlipGet'
+
   ## Analysis
   
   analysis.get_player:
@@ -44,6 +52,40 @@ channels:
         $ref: '#/components/messages/request.EmptyBody'
       response.PlayerGet:
         $ref: '#/components/messages/analysis.response.PlayerGet'
+
+  ## Sport Stats
+
+  sport_stats.get_player:
+    address: 'sport_stats.req/get_player'
+    messages:
+      request.EmptyBody:
+        $ref: '#/components/messages/request.EmptyBody'
+      response.Player:
+        $ref: '#/components/messages/sport_stats.response.Player'
+  
+  sport_stats.accept_tc:
+    address: 'sport_stats.req/accept_tc'
+    messages:
+      request.EmptyBody:
+        $ref: '#/components/messages/request.EmptyBody'
+      response.Player:
+        $ref: '#/components/messages/sport_stats.response.Player'
+  
+  sport_stats.reject_tc:
+    address: 'sport_stats.req/reject_tc'
+    messages:
+      request.EmptyBody:
+        $ref: '#/components/messages/request.EmptyBody'
+      response.Player:
+        $ref: '#/components/messages/sport_stats.response.Player'
+
+  sport_stats.get_player_stats:
+    address: 'sport_stats.req/get_player_stats'
+    messages:
+      request.PlayerStatsGet:
+        $ref: '#/components/messages/sport_stats.request.PlayerStatsGet'
+      response.PlayerStatsGet:
+        $ref: '#/components/messages/sport_stats.response.PlayerStatsGet'
 
 ############
 
@@ -73,12 +115,21 @@ operations:
 
   share.req2/get_player:
     action: receive
-    summary: 'Get the currently loggen in player data'
+    summary: (Protected) Get the currently loggen in player data
     channel:
       $ref: '#/channels/share.get_player'
     messages:
       - $ref: '#/channels/share.get_player/messages/request.EmptyBody'
       - $ref: '#/channels/share.get_player/messages/response.PlayerGet'
+
+  share.req2/get_external_shared_slip:
+    action: receive
+    summary: Get slip shared by an external app. Such slips always have payment info hidden
+    channel:
+      $ref: '#/channels/share.get_external_shared_slip'
+    messages:
+      - $ref: '#/channels/share.get_external_shared_slip/messages/request.ExternalSharedSlipGet'
+      - $ref: '#/channels/share.get_external_shared_slip/messages/response.ExternalSharedSlipGet'
 
   ## Analysis
 
@@ -89,7 +140,57 @@ operations:
     messages:
       - $ref: '#/channels/analysis.get_player/messages/request.EmptyBody'
       - $ref: '#/channels/analysis.get_player/messages/response.PlayerGet'
+
+  ################
+  ## Sport Stats
+  ################
+
+  sport_stats.req/get_player:
+    action: receive
+    summary: (Protected) Get the currently logged in player info.
+    channel:
+      $ref: '#/channels/sport_stats.get_player'
+    messages:
+      - $ref: '#/channels/sport_stats.get_player/messages/request.EmptyBody'
+      - $ref: '#/channels/sport_stats.get_player/messages/response.Player'
   
+  sport_stats.req/accept_tc:
+    action: receive
+    summary: (Protected) Accept T&C
+    description: |
+        Accept the T&C necessary for showing and viewing of player stats.
+
+        For now, T&C can be accepted and rejected infinitely, at any time, without
+        any penalties.
+    channel:
+      $ref: '#/channels/sport_stats.accept_tc'
+    messages:
+      - $ref: '#/channels/sport_stats.accept_tc/messages/request.EmptyBody'
+      - $ref: '#/channels/sport_stats.accept_tc/messages/response.Player'
+
+  sport_stats.req/reject_tc:
+    action: receive
+    summary: (Protected) Reject T&C
+    description: |
+        Reject the T&C necessary for showing and viewing of player stats.
+
+        For now, T&C can be accepted and rejected infinitely, at any time, without
+        any penalties.
+    channel:
+      $ref: '#/channels/sport_stats.reject_tc'
+    messages:
+      - $ref: '#/channels/sport_stats.reject_tc/messages/request.EmptyBody'
+      - $ref: '#/channels/sport_stats.reject_tc/messages/response.Player'
+
+  sport_stats.req/get_player_stats:
+    action: receive
+    summary: (Protected) Get the selected player stats, if possible
+    channel:
+      $ref: '#/channels/sport_stats.get_player_stats'
+    messages:
+      - $ref: '#/channels/sport_stats.get_player_stats/messages/request.PlayerStatsGet'
+      - $ref: '#/channels/sport_stats.get_player_stats/messages/response.PlayerStatsGet'
+
 ############
 
 components:
@@ -128,6 +229,17 @@ components:
       title: RESPONSE
       payload:
         $ref: '#/components/schemas/share.response.PlayerGet'
+    
+
+    share.request.ExternalSharedSlipGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/share.request.ExternalSharedSlipGet'
+    
+    share.response.ExternalSharedSlipGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/share.response.ExternalSharedSlipGet'
 
     ## Analysis
 
@@ -135,6 +247,28 @@ components:
       title: RESPONSE
       payload:
         $ref: '#/components/schemas/analysis.response.PlayerGet'
+
+    ## Sport Stats
+
+    sport_stats.response.Player:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/sport_stats.response.Player'
+
+    sport_stats.response.PlayerStats:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/sport_stats.response.PlayerStatsGet'
+    
+    sport_stats.request.PlayerStatsGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/sport_stats.request.PlayerStatsGet'
+
+    sport_stats.response.PlayerStatsGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/sport_stats.response.PlayerStatsGet'
 
 
   schemas:
@@ -175,6 +309,18 @@ components:
         player:
           $ref: '#/components/schemas/share.model.Player'
     
+    share.request.ExternalSharedSlipGet:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/field.uuid'
+    
+    share.response.ExternalSharedSlipGet:
+      type: object
+      properties:
+        sharedSlip:
+          $ref: '#/components/schemas/share.model.SharedSlip'
+    
     ### Analysis
 
     analysis.response.PlayerGet:
@@ -182,6 +328,29 @@ components:
       properties:
         player:
           $ref: '#/components/schemas/analysis.model.Player'
+
+    ### Sport Stats
+
+    sport_stats.response.Player:
+      type: object
+      properties:
+        player:
+          $ref: '#/components/schemas/sport_stats.model.Player'
+        
+    sport_stats.request.PlayerStatsGet:
+      type: object
+      properties:
+        profileId:
+          $ref: '#/components/schemas/field.uuid'
+
+    sport_stats.response.PlayerStatsGet:
+      type: object
+      properties:
+        visibility:
+          $ref: '#/components/schemas/sport_stats.enum.Visibility'
+        playerStats:
+          $ref: '#/components/schemas/sport_stats.model.PlayerStats'
+
 
     ############
     ## Models
@@ -253,6 +422,64 @@ components:
         mySlipsShareTcConfirmed:
           type: boolean
           example: true
+    
+    share.model.SharedSlip:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/field.uuid'
+        metadata:
+          $ref: '#/components/schemas/share.model.Metadata'
+        slip:
+          type: object
+        player:
+          $ref: '#/components/schemas/share.model.SharedSlipPlayer'
+        # stats
+        createdAt:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+        filterPaymentInfo:
+          type: boolean
+          example: true
+        visibility:
+          $ref: '#/components/schemas/share.enum.SharedSlipVisibility'
+        externalLink:
+          type: string
+        privateLink:
+          type: string
+        superSlip:
+          $ref: '#/components/schemas/share.model.SuperSlip'
+    
+    share.model.Metadata:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 1
+        odd:
+          type: number
+          example: 123.4567
+        type:
+          type: integer
+          example: 100
+        statusUpdatedAt:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+        resultUpdatedAt:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+
+    share.model.SharedSlipPlayer:
+      type: object
+      properties:
+        profileId:
+          $ref: '#/components/schemas/field.uuid'
+        username:
+          type: string
+          example: johndoe
+    
+    share.model.SuperSlip:
+      type: object
+      properties:
+        type:
+          type: integer
 
     ### Analysis
 
@@ -271,6 +498,45 @@ components:
         publish_tc_confirmed:
           type: boolean
           example: true
+    
+    ### Sport Stats
+
+    sport_stats.model.Player:
+      type: object
+      properties:
+        profileId:
+          $ref: '#/components/schemas/field.uuid'
+        tcAccepted:
+          type: boolean
+          example: true
+    
+    sport_stats.model.PlayerStats:
+      type: object
+      properties:
+        lines:
+          type: integer
+          example: 80
+        linesWon:
+          type: integer
+          example: 52
+        linesWinRate:
+          type: integer
+          example: 65
+        highestLineOddsWon:
+          type: number
+          example: 4.55
+        highestLineOddsWonSharedSlipId:
+          $ref: '#/components/schemas/field.uuid'
+        highestWinningSlipOdds:
+          type: number
+          example: 123.4567
+        highestWinningSlipOddsSharedSlipId:
+          $ref: '#/components/schemas/field.uuid'
+        mostLinesWonOnSlip:
+          type: integer
+          example: 12
+        mostLinesWonOnSlipSharedSlipId:
+          $ref: '#/components/schemas/field.uuid'
 
     ############
     ## Enums
@@ -286,6 +552,31 @@ components:
         - 2 # Asking for money
         - 3 # Verbal abuse
 
+    ## Share
+
+    share.enum.SharedSlipVisibility:
+      type: integer
+      enum:
+        - 0 # Public
+        - 4 # Private
+
+    ## Sport Stats
+
+    sport_stats.enum.Visibility:
+      type: integer
+      description: |
+        ### Enum
+        - `1` - The selected player has no stats
+        - `2` - The viewer is forbidden from viewing the selected player
+        stats
+        - `3` - The selected player has stats, and it's visible
+        - `4` - The selected player has stats hidden
+
+      enum:
+        - 1 # No Stats
+        - 2 # Forbidden
+        - 3 # Visible
+        - 4 # Hidden
 
     ############
     ## Fields
