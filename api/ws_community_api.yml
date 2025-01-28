@@ -1,3 +1,4 @@
+
 asyncapi: 3.0.0
 info:
   title: Community WS API
@@ -160,6 +161,8 @@ operations:
     description: |
         Accept the T&C necessary for showing and viewing of player stats.
 
+        Calling this API method if `showTcModal` is `true` will set it to `false`.
+
         For now, T&C can be accepted and rejected infinitely, at any time, without
         any penalties.
     channel:
@@ -173,6 +176,8 @@ operations:
     summary: (Protected) Reject T&C
     description: |
         Reject the T&C necessary for showing and viewing of player stats.
+
+        Calling this API method if `showTcModal` is `true` will set it to `false`.
 
         For now, T&C can be accepted and rejected infinitely, at any time, without
         any penalties.
@@ -507,6 +512,9 @@ components:
         profileId:
           $ref: '#/components/schemas/field.uuid'
         tcAccepted:
+          type: boolean
+          example: true
+        showTcModal:
           type: boolean
           example: true
     
