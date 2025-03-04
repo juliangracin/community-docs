@@ -1,4 +1,3 @@
-
 asyncapi: 3.0.0
 info:
   title: Community WS API
@@ -25,6 +24,14 @@ channels:
         $ref: '#/components/messages/chat.request.AvailableReportActionsGet'
       response.AvailableReportActionsGet:
         $ref: '#/components/messages/chat.response.AvailableReportActionsGet'
+
+  chat.report_message:
+    address: chat.req/report_message
+    messages:
+      request.MessageReport:
+        $ref: '#/components/messages/chat.request.MessageReport'
+      response.MessageReport:
+        $ref: '#/components/messages/chat.response.MessageReport'
 
   ## Share
 
@@ -96,7 +103,7 @@ operations:
 
   chat.req/get_user:
     action: receive
-    summary: 'Get the currently logged in user data'
+    summary: '(protected) Get the currently logged in user data'
     channel:
       $ref: '#/channels/chat.get_user'
     messages:
@@ -111,6 +118,19 @@ operations:
     messages:
       - $ref: '#/channels/chat.get_available_report_actions/messages/request.AvailableReportActionsGet'
       - $ref: '#/channels/chat.get_available_report_actions/messages/response.AvailableReportActionsGet'
+
+  chat.req/report_message:
+    action: receive
+    summary: '(protected) Report the selected message'
+    description: |
+      If selected `category` is `0` (Ostalo), the note field in request is mandatory.
+
+      It is optional otherwise.
+    channel:
+      $ref: '#/channels/chat.report_message'
+    messages:
+      - $ref: '#/channels/chat.report_message/messages/request.MessageReport'
+      - $ref: '#/channels/chat.report_message/messages/response.MessageReport'
 
   ## Share
 
@@ -208,6 +228,10 @@ components:
       title: REQUEST
       description: 'This request has no body'
 
+    response.EmptyBody:
+      title: RESPONSE
+      description: 'This response has no body'
+
     ## Chat
 
     chat.response.UserGet:
@@ -224,9 +248,53 @@ components:
       title: REQUEST
       payload:
         $ref: '#/components/schemas/chat.response.AvailableReportActionsGet'
+      examples:
+        - name: 'Message cannot be reported'
+          payload:
+            report_action_availability: 1
+            message_id: 'd4162e00-b6cd-41a6-8b29-d041b0dab769'
+        - name: 'Message can be reported'
+          payload:
+            report_action_availability: 0
+            message_id: 'd4162e00-b6cd-41a6-8b29-d041b0dab769'
+            categories:
+              - id: 0
+                text: 'Ostalo'
+                is_note_mandatory: true
+              - id: 1
+                text: 'Govor mržnje i neprimjerene poruke'
+                is_note_mandatory: false
+              - id: 2
+                text: 'Traženje novca'
+                is_note_mandatory: false
+              - id: 3
+                text: 'Maltretiranje ili uznemiravanje'
+                is_note_mandatory: false
 
     chat.request.MessageReport:
       title: REQUEST
+      payload:
+        $ref: '#/components/schemas/chat.request.MessageReport'
+      examples:
+        - name: 'With mandatory note'
+          payload:
+            message_id: 'd4162e00-b6cd-41a6-8b29-d041b0dab769'
+            category: 0
+            note: 'short note'
+        - name: 'Without optional note'
+          payload:
+            message_id: 'd4162e00-b6cd-41a6-8b29-d041b0dab769'
+            category: 1
+        - name: 'Setting optional note'
+          payload:
+            message_id: 'd4162e00-b6cd-41a6-8b29-d041b0dab769'
+            category: 1
+            note: 'some note'
+    
+    chat.response.MessageReport:
+      title: RESPONSE
+      payload:
+        $ref: "#/components/schemas/chat.response.MessageReport"
 
     ## Share
 
@@ -279,10 +347,10 @@ components:
   schemas:
 
     ############
-    ## Requests & Responses
+    ## Chat
     ############
 
-    ### Chat
+    ### Requests & Responses
 
     chat.response.UserGet:
       type: object
@@ -303,10 +371,118 @@ components:
       properties:
         report_action_availability:
           type: integer
+        message_id:
+          $ref: '#/components/schemas/field.uuid'
         categories:
-          $ref: '#/components/schemas/chat.model.AvailableCategory'
+          type: array
+          items:
+            $ref: '#/components/schemas/chat.model.AvailableCategory'
+    
+    chat.request.MessageReport:
+      type: object
+      additionalProperties: false
+      properties:
+        message_id:
+          $ref: '#/components/schemas/field.uuid'
+        category:        
+          $ref: '#/components/schemas/chat.enum.ReportCategory'
+        note:
+          description: Required only if category is `0` (Other).
+          type: string
+          example: 'some short arbitrary text'
+      required:
+        - 'id'
+        - 'category'
+    
+    chat.response.MessageReport:
+      type: object
+      additionalProperties: false
+      properties:
+        message_id:
+          $ref: '#/components/schemas/field.uuid'
   
+    ### Models
+
+    chat.model.User:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/field.uuid'
+        profile_id:
+          $ref: '#/components/schemas/field.uuid'
+        nickname:
+          type: string
+          example: 'johndoe'
+        role:
+          type: integer
+          example: 0
+        banned:
+          type: boolean
+          example: false
+        warned:
+          type: boolean
+          example: false
+        nick_confirmed:
+          type: boolean
+          example: true
+        share_tc_confirmed:
+          type: boolean
+          example: true
+        my_slips_share_tc_confirmed:
+          type: boolean
+          example: false
+        timeout:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+
+    chat.model.AvailableCategory:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/chat.enum.ReportCategory'
+        # label:
+        #   type: string
+        #   example: 'chat_message_report_category_other'
+        text:
+          type: string
+        is_note_mandatory:
+          type: boolean
+          example: true
+
+    ## Enums
+
+    chat.enum.ReportCategory:
+      type: integer
+      description: |
+        ### Enum
+
+        - `0` - Other
+        - `1` - Hate speech
+        - `2` - Asking for money
+        - `3` - Verbal abuse
+      enum:
+        - 0 # Other
+        - 1 # Hate speech
+        - 2 # Asking for money
+        - 3 # Verbal abuse
+
+    chat.enum.ReportActionAvailability:
+      type: integer
+      description: |
+        ### Enum
+
+        - `0` - Allowed
+        - `1` - Disabled
+        - `2` - Disabled, user has already reported this message
+      enum:
+        - 0 # Allowed
+        - 1 # Disabled
+        - 2 # Disabled - user has already reported this message
+
+    ###########
     ### Share
+    ###########
 
     share.response.PlayerGet:
       type: object
@@ -361,54 +537,6 @@ components:
     ## Models
     ############
 
-    ### Chat
-
-    chat.model.User:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          $ref: '#/components/schemas/field.uuid'
-        profile_id:
-          $ref: '#/components/schemas/field.uuid'
-        nickname:
-          type: string
-          example: 'johndoe'
-        role:
-          type: integer
-          example: 0
-        banned:
-          type: boolean
-          example: false
-        warned:
-          type: boolean
-          example: false
-        nick_confirmed:
-          type: boolean
-          example: true
-        share_tc_confirmed:
-          type: boolean
-          example: true
-        my_slips_share_tc_confirmed:
-          type: boolean
-          example: false
-        timeout:
-          $ref: '#/components/schemas/field.TimeRFC3339Nano'
-
-    chat.model.AvailableCategory:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          $ref: '#/components/schemas/chat.enum.ReportCategory'
-        label:
-          type: string
-          example: 'chat_message_report_category_other'
-        text:
-          type: string
-        is_note_mandatory:
-          type: boolean
-          example: true
 
     ### Share
 
@@ -549,16 +677,6 @@ components:
     ############
     ## Enums
     ############
-
-    ## Chat
-
-    chat.enum.ReportCategory:
-      type: integer
-      enum:
-        - 0 # Other
-        - 1 # Hate speech
-        - 2 # Asking for money
-        - 3 # Verbal abuse
 
     ## Share
 
