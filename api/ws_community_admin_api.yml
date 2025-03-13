@@ -1,0 +1,51 @@
+asyncapi: 3.0.0
+info:
+  title: Community WS Admin API
+  version: 1.0.0
+  description: >
+    Admin related websocket API endpoints.
+ 
+channels:
+  chat.get_user:
+    address: 'chat.admin.req/get_user'
+    messages:
+      request.EmptyBody:
+        $ref: '#/components/messages/request.EmptyBody'
+      response.UserGet:
+        $ref: '#/components/messages/response.UserGet'
+
+operations:
+  chat.get_user:
+    action: receive
+    summary: (protected) get the currently logged in user info
+    channel:
+      $ref: '#/channels/chat.get_user'
+    messages:
+      - $ref: '#/channels/chat.get_user/messages/request.EmptyBody'
+      - $ref: '#/channels/chat.get_user/messages/response.UserGet'
+
+
+components:
+
+  messages:
+
+    request.EmptyBody:
+      title: REQUEST
+
+    response.UserGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/chat.response.UserGet'
+
+  schemas:
+
+    chat.model.User:
+      type: object
+    
+    chat.response.UserGet:
+      type: object
+      additionalProperties: false
+      properties:
+        user:
+          $ref: '#/components/schemas/chat.model.User'
+

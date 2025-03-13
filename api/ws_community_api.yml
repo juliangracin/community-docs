@@ -3,7 +3,7 @@ info:
   title: Community WS API
   version: 1.0.0
   description: >
-    Chat service client websocket API
+    Community websocket API
     
 channels:
 
@@ -258,18 +258,18 @@ components:
             report_action_availability: 0
             message_id: 'd4162e00-b6cd-41a6-8b29-d041b0dab769'
             categories:
-              - id: 0
-                text: 'Ostalo'
-                is_note_mandatory: true
-              - id: 1
-                text: 'Govor mržnje i neprimjerene poruke'
-                is_note_mandatory: false
-              - id: 2
-                text: 'Traženje novca'
+              - id: 4
+                text: 'Neprimjerena poruka'
                 is_note_mandatory: false
               - id: 3
-                text: 'Maltretiranje ili uznemiravanje'
+                text: 'Žicanje novca'
                 is_note_mandatory: false
+              - id: 2
+                text: 'Maltretiranje/uznemiravanje'
+                is_note_mandatory: false
+              - id: 1
+                text: 'Ostalo'
+                is_note_mandatory: true
 
     chat.request.MessageReport:
       title: REQUEST
@@ -457,15 +457,15 @@ components:
       description: |
         ### Enum
 
-        - `0` - Other
-        - `1` - Hate speech
-        - `2` - Asking for money
-        - `3` - Verbal abuse
+        - `1` - Ostalo
+        - `2` - Maltretiranje/uznemiravanje
+        - `3` - Žicanje novca
+        - `4` - Neprimjerena poruka
       enum:
-        - 0 # Other
-        - 1 # Hate speech
-        - 2 # Asking for money
-        - 3 # Verbal abuse
+        - 1 # Other
+        - 2 # Hate Speech
+        - 3 # Asking for money
+        - 4 # Verbal abuse
 
     chat.enum.ReportActionAvailability:
       type: integer
