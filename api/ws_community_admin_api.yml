@@ -6,41 +6,293 @@ info:
     Admin related websocket API endpoints.
  
 channels:
-  chat.get_user:
-    address: 'chat.admin.req/get_user'
+  # chat.get_user:
+  #   address: 'chat.admin.req/get_user'
+  #   messages:
+  #     request.EmptyBody:
+  #       $ref: '#/components/messages/request.EmptyBody'
+  #     response.UserGet:
+  #       $ref: '#/components/messages/response.UserGet'
+
+  chat.get_message_reports:
+    address: 'chat.admin.req/get_message_reports'
     messages:
-      request.EmptyBody:
+      request.MessageReportsGet:
+        $ref: '#/components/messages/request.MessageReportsGet'
+      response.MessageReportsGet:
+        $ref: '#/components/messages/response.MessageReportsGet'
+
+  chat.get_pending_message_reports:
+    address: 'chat.admin.req/get_pending_message_reports'
+    messages:
+      request.PendingMessageReportsGet:
         $ref: '#/components/messages/request.EmptyBody'
-      response.UserGet:
-        $ref: '#/components/messages/response.UserGet'
+      response.PendingMessageReportsGet:
+        $ref: '#/components/messages/response.MessageReportsGet'
+
+  chat.get_message_report_events:
+    address: 'chat.admin.req/get_message_report_events'
+    messages:
+      request.MessageReportEventsGet:
+        $ref: '#/components/messages/request.MessageReportEventsGet'
+      response.MessageReportEventsGet:
+        $ref: '#/components/messages/response.MessageReportEventsGet'
+
+  chat.close_message_report:
+    address: 'chat.admin.req/close_message_report'
+    messages:
+      request.MessageReportClose:
+        $ref: '#/components/messages/request.MessageReportClose'
+      response.MessageReportClose:
+        $ref: '#/components/messages/response.EmptyBody'
+  
+  chat.message-reports:
+    address: 'chat.admin/message-reports'
+    messages:
+      message.MessageReport:
+        $ref: '#/components/messages/message.MessageReport'
 
 operations:
-  chat.get_user:
-    action: receive
-    summary: (protected) get the currently logged in user info
+
+  # chat.admin.req/get_user:
+  #   action: send 
+  #   summary: (protected) get the currently logged in user info
+  #   channel:
+  #     $ref: '#/channels/chat.get_user'
+  #   messages:
+  #     - $ref: '#/channels/chat.get_user/messages/request.EmptyBody'
+  #     - $ref: '#/channels/chat.get_user/messages/response.UserGet'
+
+  chat.admin.req/get_message_reports:
+    action: send 
+    summary: (protected) Get message reports
     channel:
-      $ref: '#/channels/chat.get_user'
+      $ref: '#/channels/chat.get_message_reports'
     messages:
-      - $ref: '#/channels/chat.get_user/messages/request.EmptyBody'
-      - $ref: '#/channels/chat.get_user/messages/response.UserGet'
+      - $ref: '#/channels/chat.get_message_reports/messages/request.MessageReportsGet'
+      - $ref: '#/channels/chat.get_message_reports/messages/response.MessageReportsGet'
+
+  chat.admin.req/get_pending_message_reports:
+    action: send 
+    summary: (protected) Get pending message reports, showing oldest report first
+    channel:
+      $ref: '#/channels/chat.get_pending_message_reports'
+    messages:
+      - $ref: '#/channels/chat.get_pending_message_reports/messages/request.PendingMessageReportsGet'
+      - $ref: '#/channels/chat.get_pending_message_reports/messages/response.PendingMessageReportsGet'
+
+  chat.admin.req/get_message_report_events:
+    action: send 
+    summary: (protected) Get all report events for message
+    channel:
+      $ref: '#/channels/chat.get_message_report_events'
+    messages:
+      - $ref: '#/channels/chat.get_message_report_events/messages/request.MessageReportEventsGet'
+      - $ref: '#/channels/chat.get_message_report_events/messages/response.MessageReportEventsGet'
+
+  chat.admin.req/message_report_close:
+    action: send
+    summary: (protected) Close the message report
+    channel:
+      $ref: '#/channels/chat.close_message_report'
+    messages:
+      - $ref: '#/channels/chat.close_message_report/messages/request.MessageReportClose'
+      - $ref: '#/channels/chat.close_message_report/messages/response.MessageReportClose'
+
+  ## Topics for subscribing
+
+  chat.admin/message-reports:
+    action: receive
+    summary: Listen for message report changes
+    description: |
+      Each time there is a change on any of the message reports, a message with up-to-date
+      MessageReport will be sent on this topic.
+    channel:
+      $ref: '#/channels/chat.message-reports'
+    messages:
+      - $ref: '#/channels/chat.message-reports/messages/message.MessageReport'
 
 
 components:
 
   messages:
 
+    #########################
+    ## Req Res
+    #########################
+
     request.EmptyBody:
       title: REQUEST
+      description: 'The reques thas no body'
+
+    response.EmptyBody:
+      title: REQUEST
+      description: 'The response has no body'
 
     response.UserGet:
       title: RESPONSE
       payload:
         $ref: '#/components/schemas/chat.response.UserGet'
+    
+    request.MessageReportsGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/chat.request.MessageReportsGet'
+    
+    response.MessageReportsGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/chat.response.MessageReportsGet'
+
+    request.MessageReportEventsGet:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/chat.request.MessageReportEventsGet'
+    
+    response.MessageReportEventsGet:
+      title: RESPONSE
+      payload:
+        $ref: '#/components/schemas/chat.response.MessageReportEventsGet'
+
+    request.MessageReportClose:
+      title: REQUEST
+      payload:
+        $ref: '#/components/schemas/chat.request.MessageReportClose'
+  
+    ################################
+    ## Messages broadcas on a topic
+    ################################
+
+    message.MessageReport:
+      title: MESSAGE
+      payload:
+        $ref: '#/components/schemas/chat.model.MessageReportGroup'
 
   schemas:
 
+    ## Enums
+
+    chat.enum.UserStatus:
+      type: integer
+      enum:
+        - 0 # Active
+        - 1 # Warned
+        - 2 # Timeouted
+        - 3 # Banned
+
+    chat.enum.MessageReportGroupStatus:
+      type: integer
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+
+    chat.enum.PenaltyIssuer:
+      type: integer
+      enum:
+        - 1
+    
+    chat.enum.MessageReportCategory:
+      type: integer
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+
+    chat.enum.MessageReportEventType:
+      type: integer
+      enum:
+        - 0
+        - 1
+    
+    chat.enum.Penalty:
+      type: integer
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4 
+
+    ########################
+    ## Models
+
     chat.model.User:
       type: object
+
+    chat.model.Category:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/chat.enum.MessageReportCategory'
+
+    chat.model.MessageReportGroup:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/field.uuid'
+        reported_user_id:
+          $ref: '#/components/schemas/field.uuid'
+        reported_user_name:
+          type: string
+          example: 'john'
+        reported_user_status:
+          $ref: '#/components/schemas/chat.enum.UserStatus'
+        status:
+          $ref: '#/components/schemas/chat.enum.MessageReportGroupStatus'  
+        penalty_issuer:
+          $ref: '#/components/schemas/chat.enum.PenaltyIssuer'
+        penalty_issuer_name:
+          type: string
+          example: 'tester@minus5.hr'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/chat.model.Category'
+        created_at:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+
+    chat.model.MessageReportEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/field.uuid'
+        type:
+          $ref: '#/components/schemas/chat.enum.MessageReportEventType'
+        user_id:
+          $ref: '#/components/schemas/field.uuid'
+        user_name:
+          type: string
+          example: 'john'
+        category:
+          $ref: '#/components/schemas/chat.enum.MessageReportCategory'
+        penalty:
+          $ref: '#/components/schemas/chat.enum.Penalty'
+        penalty_issuer:
+          $ref: '#/components/schemas/chat.enum.PenaltyIssuer'
+        penalty_issuer_name:
+          type: string
+          example: 'tester.testerowitch@minus5.hr'
+        note:
+          type: string
+          example: 'user note'
+        created_at:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+
+    chat.request.MessageReportClose:
+      type: object
+      properties:
+        message_id:
+          $ref: '#/components/schemas/field.uuid'
+        penalty:
+          $ref: '#/components/schemas/chat.enum.Penalty'
+      
+    ############################
+    ## Req Res
     
     chat.response.UserGet:
       type: object
@@ -48,4 +300,63 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/chat.model.User'
+
+    chat.request.MessageReportsGet:
+      type: object
+      additinalProperties: false
+      properties:
+        after:
+          type: integer
+        limit:
+          type: integer
+        user_id:
+          $ref: '#/components/schemas/field.uuid'
+    
+    chat.response.MessageReportsGet:
+      type: object
+      additinalProperties: false
+      properties:
+        report_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/chat.model.MessageReportGroup'
+        next:
+          type: integer
+          example: 123456789
+    
+    chat.request.MessageReportEventsGet:
+      type: object
+      additionalProperties: false
+      properties:
+        message_id:
+          $ref: '#/components/schemas/field.uuid'
+    
+    chat.response.MessageReportEventsGet:
+      type: object
+      additionalProperties: false
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/chat.model.MessageReportEvent'
+
+
+############
+## Fields
+############
+
+    field.uuid:
+      type: string
+      description: lowercase UUIDv4 string
+      format: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      example: d4162e00-b6cd-41a6-8b29-d041b0dab769
+    field.SlipId:
+      type: string
+      description: slip ID
+      format: '^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$'
+      example: D4162E00-B6CD-41A6-4B29-D041B0DAB769
+    field.TimeRFC3339Nano:
+      type: string
+      description: Time and date in RFC3339 format with nanoseconds
+      example: '2024-06-07T15:00:00Z'
 
