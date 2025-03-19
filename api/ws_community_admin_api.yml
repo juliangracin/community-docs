@@ -242,7 +242,10 @@ components:
         reported_user_status:
           $ref: '#/components/schemas/chat.enum.UserStatus'
         status:
-          $ref: '#/components/schemas/chat.enum.MessageReportGroupStatus'  
+          $ref: '#/components/schemas/chat.enum.MessageReportGroupStatus'
+        text:
+          type: string
+          example: 'message foo bar text'
         penalty_issuer:
           $ref: '#/components/schemas/chat.enum.PenaltyIssuer'
         penalty_issuer_name:
