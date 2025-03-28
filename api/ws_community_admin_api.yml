@@ -174,6 +174,11 @@ components:
 
     chat.enum.UserStatus:
       type: integer
+      description: |
+        - `0` - Active
+        - `1` - Warned
+        - `2` - Temporary Ban
+        - `3` - Permanent Ban
       enum:
         - 0 # Active
         - 1 # Warned
@@ -182,6 +187,12 @@ components:
 
     chat.enum.MessageReportGroupStatus:
       type: integer
+      description: |
+        - `0` - Open
+        - `1` - Closed without a penalty (dismissed)
+        - `2` - Closed with warning
+        - `3` - Closed with temporary ban
+        - `4` - Closed with permanent ban
       enum:
         - 0
         - 1
@@ -191,11 +202,18 @@ components:
 
     chat.enum.PenaltyIssuer:
       type: integer
+      description: |
+        - `1` - Moderator
       enum:
         - 1
     
     chat.enum.MessageReportCategory:
       type: integer
+      description: |
+        - `1` - Other
+        - `2` - Harassment
+        - `3` - Asking for money
+        - `4` - Inappropriate message
       enum:
         - 1
         - 2
@@ -204,12 +222,20 @@ components:
 
     chat.enum.MessageReportEventType:
       type: integer
+      description: |
+        - `1` - Created 
+        - `2` - Closed
       enum:
         - 0
         - 1
     
     chat.enum.Penalty:
       type: integer
+      description: |
+        - `1` - None
+        - `2` - Warning
+        - `3` - Temporary ban
+        - `4` - Permanent ban
       enum:
         - 1
         - 2
@@ -227,6 +253,25 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/chat.enum.MessageReportCategory'
+        name:
+          type: string
+          example: 'Other'
+        count:
+          type: integer
+          example: 4
+        notes:
+          $ref: '#/components/schemas/chat.model.ReportCategoryNote'
+
+    chat.model.ReportCategoryNote:
+      type: object
+      additionalProperties: false
+      properties:
+        username:
+          type: string
+          example: 'john'
+        text:
+          type: string
+          example: 'some random text'
 
     chat.model.MessageReportGroup:
       type: object
@@ -288,6 +333,7 @@ components:
 
     chat.request.MessageReportClose:
       type: object
+      additionalProperties: false
       properties:
         message_id:
           $ref: '#/components/schemas/field.uuid'
