@@ -126,7 +126,7 @@ components:
       description: 'The reques thas no body'
 
     response.EmptyBody:
-      title: REQUEST
+      title: RESPONSE
       description: 'The response has no body'
 
     response.UserGet:
@@ -339,9 +339,16 @@ components:
           $ref: '#/components/schemas/field.uuid'
         penalty:
           $ref: '#/components/schemas/chat.enum.Penalty'
+        duration:
+          type: integer
+          description: |
+            Custom temporary duration, specified in seconds. Applied only when `penalty`
+            is `3` - `Temporary ban`.
+          example: 900
       
     ############################
     ## Req Res
+    ############################
     
     chat.response.UserGet:
       type: object
