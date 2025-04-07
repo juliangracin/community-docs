@@ -7,7 +7,9 @@ info:
     
 channels:
 
+  ########################
   ## Chat
+  ########################
 
   chat.get_user:
     address: 'chat.req/get_user'
@@ -32,8 +34,18 @@ channels:
         $ref: '#/components/messages/chat.request.MessageReport'
       response.MessageReport:
         $ref: '#/components/messages/chat.response.MessageReport'
+  
+  ### Subscribe channels
 
+  chat.user:
+    address: 'chat/user-{user_id}'
+    messages:
+      message.User:
+        $ref: '#/components/messages/chat.message.User'
+
+  ########################
   ## Share
+  ########################
 
   share.get_player:
     address: 'share.req2/get_player'
@@ -51,7 +63,9 @@ channels:
       response.ExternalSharedSlipGet:
         $ref: '#/components/messages/share.response.ExternalSharedSlipGet'
 
+  ########################
   ## Analysis
+  ########################
   
   analysis.get_player:
     address: 'analysis.req/get_player'
@@ -61,7 +75,9 @@ channels:
       response.PlayerGet:
         $ref: '#/components/messages/analysis.response.PlayerGet'
 
+  ########################
   ## Sport Stats
+  ########################
 
   sport_stats.get_player:
     address: 'sport_stats.req/get_player'
@@ -99,10 +115,12 @@ channels:
 
 operations:
 
+  ########################
   ## Chat
+  ########################
 
   chat.req/get_user:
-    action: receive
+    action: send
     summary: '(protected) Get the currently logged in user data'
     channel:
       $ref: '#/channels/chat.get_user'
@@ -111,7 +129,7 @@ operations:
       - $ref: '#/channels/chat.get_user/messages/response.UserGet'
   
   chat.req/get_available_report_actions:
-    action: receive
+    action: send
     summary: 'Get the available report actions for selected message'
     channel:
       $ref: '#/channels/chat.get_available_report_actions'
@@ -120,7 +138,7 @@ operations:
       - $ref: '#/channels/chat.get_available_report_actions/messages/response.AvailableReportActionsGet'
 
   chat.req/report_message:
-    action: receive
+    action: send
     summary: '(protected) Report the selected message'
     description: |
       If selected `category` is `0` (Ostalo), the note field in request is mandatory.
@@ -131,11 +149,22 @@ operations:
     messages:
       - $ref: '#/channels/chat.report_message/messages/request.MessageReport'
       - $ref: '#/channels/chat.report_message/messages/response.MessageReport'
+  
+  ### Subscriptions
 
+  chat/user-{user_id}:
+    action: receive
+    description: |
+      Receive an update message whenever user is updated.
+    channel:
+      $ref: '#/channels/chat.user'
+
+  ########################
   ## Share
+  ########################
 
   share.req2/get_player:
-    action: receive
+    action: send
     summary: (Protected) Get the currently loggen in player data
     channel:
       $ref: '#/channels/share.get_player'
@@ -144,7 +173,7 @@ operations:
       - $ref: '#/channels/share.get_player/messages/response.PlayerGet'
 
   share.req2/get_external_shared_slip:
-    action: receive
+    action: send
     summary: Get slip shared by an external app. Such slips always have payment info hidden
     channel:
       $ref: '#/channels/share.get_external_shared_slip'
@@ -152,22 +181,24 @@ operations:
       - $ref: '#/channels/share.get_external_shared_slip/messages/request.ExternalSharedSlipGet'
       - $ref: '#/channels/share.get_external_shared_slip/messages/response.ExternalSharedSlipGet'
 
+  ########################
   ## Analysis
+  ########################
 
   analysis.req/get_player:
-    action: receive
+    action: send
     channel:
       $ref: '#/channels/analysis.get_player'
     messages:
       - $ref: '#/channels/analysis.get_player/messages/request.EmptyBody'
       - $ref: '#/channels/analysis.get_player/messages/response.PlayerGet'
 
-  ################
+  ########################
   ## Sport Stats
-  ################
+  ########################
 
   sport_stats.req/get_player:
-    action: receive
+    action: send
     summary: (Protected) Get the currently logged in player info.
     channel:
       $ref: '#/channels/sport_stats.get_player'
@@ -176,7 +207,7 @@ operations:
       - $ref: '#/channels/sport_stats.get_player/messages/response.Player'
   
   sport_stats.req/accept_tc:
-    action: receive
+    action: send
     summary: (Protected) Accept T&C
     description: |
         Accept the T&C necessary for showing and viewing of player stats.
@@ -192,7 +223,7 @@ operations:
       - $ref: '#/channels/sport_stats.accept_tc/messages/response.Player'
 
   sport_stats.req/reject_tc:
-    action: receive
+    action: send
     summary: (Protected) Reject T&C
     description: |
         Reject the T&C necessary for showing and viewing of player stats.
@@ -208,7 +239,7 @@ operations:
       - $ref: '#/channels/sport_stats.reject_tc/messages/response.Player'
 
   sport_stats.req/get_player_stats:
-    action: receive
+    action: send
     summary: (Protected) Get the selected player stats, if possible
     channel:
       $ref: '#/channels/sport_stats.get_player_stats'
@@ -222,7 +253,9 @@ components:
 
   messages:
 
+    ####################
     ## Generic
+    ####################
 
     request.EmptyBody:
       title: REQUEST
@@ -232,7 +265,9 @@ components:
       title: RESPONSE
       description: 'This response has no body'
 
+    ####################
     ## Chat
+    ####################
 
     chat.response.UserGet:
       title: RESPONSE
@@ -295,8 +330,16 @@ components:
       title: RESPONSE
       payload:
         $ref: "#/components/schemas/chat.response.MessageReport"
+    
+    ### Messages
 
+    chat.message.User:
+      payload:
+        $ref: '#/components/schemas/chat.model.User'
+
+    ####################
     ## Share
+    ####################
 
     share.response.PlayerGet:
       title: RESPONSE
@@ -434,6 +477,28 @@ components:
           example: false
         timeout:
           $ref: '#/components/schemas/field.TimeRFC3339Nano'
+        applied_penalty:
+          $ref: '#/components/schemas/chat.model.UserPenalty'
+    
+    chat.model.UserPenalty:
+      type: object
+      additionalProperties: false
+      properties:
+        penalty:
+          $ref: '#/components/schemas/chat.enum.Penalty'
+        category_id:
+          $ref: '#/components/schemas/chat.enum.ReportCategory'
+        category_text:
+          $ref: '#/components/schemas/chat.enum.CategoryText'
+        duration:
+          description: |
+            Duration is specified in seconds, and is set only for temporary ban penalties
+          type: integer
+          example: 900
+        expires_at:
+          $ref: '#/components/schemas/field.TimeRFC3339Nano'
+      required:
+        - 'penalty'
 
     chat.model.AvailableCategory:
       type: object
@@ -441,9 +506,6 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/chat.enum.ReportCategory'
-        # label:
-        #   type: string
-        #   example: 'chat_message_report_category_other'
         text:
           type: string
         is_note_mandatory:
@@ -452,11 +514,30 @@ components:
 
     ## Enums
 
+    chat.enum.Penalty:
+      type: integer
+      description: |
+        - `1` - None
+        - `2` - Warning
+        - `3` - Temporary ban
+        - `4` - Permanent ban
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+    
+    chat.enum.CategoryText:
+      type: string
+      enum:
+        - 'Neprimjerena poruka'
+        - 'Žicanje novca'
+        - 'Maltretiranje/uznemiravanje'
+        - 'Ostalo'
+
     chat.enum.ReportCategory:
       type: integer
       description: |
-        ### Enum
-
         - `1` - Ostalo
         - `2` - Maltretiranje/uznemiravanje
         - `3` - Žicanje novca
@@ -722,4 +803,3 @@ components:
       type: string
       description: Time and date in RFC3339 format with nanoseconds
       example: '2024-06-07T15:00:00Z'
-
